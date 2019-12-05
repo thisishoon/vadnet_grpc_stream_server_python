@@ -2,6 +2,16 @@
 
 ### I have stripped away everything except one python file - `predict_audio.py`, which you can use to predict `.wav` files directly with the VadNet checkpoints from the original repo.
 
+#### To predict the voice activity in a .wav file:
+
+1. Clone the repo
+2. Make a virtualenv and `pip install -r requirements.txt`
+3. Run `python predict_audio.py /path/to/wavfile.wav`
+
+You can use the other checkpoints to predict gender or laughter if you like, e.g. usage:
+
+`python predict_audio.py /path/to/wavfile.wav --ckpt models/gender/model.ckpt-675023`
+
 # VadNet
 VadNet is a real-time voice activity detector for noisy enviroments. It implements an end-to-end learning approach based on Deep Neural Networks. In the extended version, gender and laughter detection are added. To see a demonstration click on the images below.
 
