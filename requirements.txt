@@ -1,0 +1,6 @@
+tensorflow==1.15
+youtube-dl
+librosa
+pycaption
+colorama
+pre-commit

@@ -1,3 +1,7 @@
+# This is a fork of VadNet by @nlml for those just looking to do inference in Python
+
+### I have stripped away everything except one python file - `predict_audio.py`, which you can use to predict `.wav` files directly with the VadNet checkpoints from the original repo.
+
 # VadNet
 VadNet is a real-time voice activity detector for noisy enviroments. It implements an end-to-end learning approach based on Deep Neural Networks. In the extended version, gender and laughter detection are added. To see a demonstration click on the images below.
 
