@@ -1,0 +1,8 @@
+README.md
+setup.py
+vadnet/predict_audio.py
+vadnet.egg-info/PKG-INFO
+vadnet.egg-info/SOURCES.txt
+vadnet.egg-info/dependency_links.txt
+vadnet.egg-info/not-zip-safe
+vadnet.egg-info/top_level.txt

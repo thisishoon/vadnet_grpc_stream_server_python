@@ -102,7 +102,7 @@ def update_var_from_checkpoint(
 
 def predict_from_checkpoint(
     audio: np.ndarray,
-    checkpoint_path: str,
+    checkpoint_path: str = "models/vad/model.ckpt-200106",
     additional_layer_names=None,
     n_batch=1,
 ) -> List:
@@ -187,3 +187,6 @@ if __name__ == "__main__":
         audio, args.ckpt, additional_layer_names=None, n_batch=1
     )
     print(result)
+    import pdb
+
+    pdb.set_trace()
