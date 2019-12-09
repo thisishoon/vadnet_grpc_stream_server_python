@@ -2,6 +2,7 @@ import numpy as np
 from flask import Flask, request
 from vadnet.predict_audio import Predictor
 import json
+import time
 
 
 predictor = Predictor()
@@ -12,12 +13,19 @@ app = Flask(__name__)
 def api_message():
 
     if request.headers["Content-Type"] == "application/octet-stream":
+        now = time.time()
         audio_array = np.frombuffer(request.data, dtype="float32").reshape(
             -1, 1
         )
-        print(audio_array.shape)
+        buffer_read_time = time.time() - now
+        now = time.time()
         result = predictor.run(audio_array)
-        return json.dumps([i.tolist() for i in result])
+        prediction_time = time.time() - now
+        return json.dumps({
+            "result":[i.tolist() for i in result],
+            "prediction_time": prediction_time,
+            "buffer_read_time": buffer_read_time,
+        })
 
     else:
         return "415 Unsupported Media Type"
