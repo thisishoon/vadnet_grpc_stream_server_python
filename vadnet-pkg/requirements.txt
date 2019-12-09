@@ -1,5 +1,7 @@
+numpy
 tensorflow==1.15
 librosa
 pycaption
 colorama
 pre-commit
+youtube-dl
