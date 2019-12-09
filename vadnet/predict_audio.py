@@ -8,6 +8,12 @@ import librosa as lr
 import youtube_dl
 
 
+DEFAULT_CKPT_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "models/vad/model.ckpt-200106"
+)
+
+
 def audio_from_file(path, sr, ext="", root="", offset=0.0, duration=None):
     path = os.path.join(root, "{}{}".format(path, ext))
     try:
@@ -102,7 +108,7 @@ def update_var_from_checkpoint(
 
 def predict_from_checkpoint(
     audio: np.ndarray,
-    checkpoint_path: str = "models/vad/model.ckpt-200106",
+    checkpoint_path: str = DEFAULT_CKPT_PATH,
     additional_layer_names=None,
     n_batch=1,
 ) -> List:
@@ -159,6 +165,15 @@ def predict_from_checkpoint(
                     break
     return result
 
+def predict_from_file(
+    audio_path: str,
+    checkpoint_path: str = DEFAULT_CKPT_PATH,
+    additional_layer_names=None,
+    n_batch=1,
+) -> List:
+    audio = audio_from_file(audio_path, 48000)
+    return predict_from_checkpoint(audio, checkpoint_path, additional_layer_names, n_batch)
+
 
 if __name__ == "__main__":
 
@@ -174,7 +189,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--ckpt",
         type=str,
-        default="models/vad/model.ckpt-200106",
+        default=DEFAULT_CKPT_PATH,
         help=(
             "path to the checkpoint file (excluding extension,"
             " e.g. 'models/vad/model.ckpt-200106')"
@@ -182,11 +197,6 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    audio = audio_from_file(args.audio_filepath, 48000)
-    result = predict_from_checkpoint(
-        audio, args.ckpt, additional_layer_names=None, n_batch=1
-    )
-    print(result)
-    import pdb
+    result = predict_from_file(args.audio_filepath, args.ckpt, additional_layer_names=None, n_batch=1)
 
-    pdb.set_trace()
+    print(result)
