@@ -14,17 +14,19 @@ def api_message():
 
     if request.headers["Content-Type"] == "application/octet-stream":
         now = time.time()
-        audio_array = np.frombuffer(request.data, dtype="float32").reshape(
-            -1, 1
-        )
+        data = request.data
+        request_read_time = time.time() - now
+        now = time.time()
+        audio_array = np.frombuffer(data, dtype="float32")
         buffer_read_time = time.time() - now
         now = time.time()
-        result = predictor.run(audio_array)
+        result = predictor.run(audio_array.reshape(-1, 1))
         prediction_time = time.time() - now
         return json.dumps({
             "result":[i.tolist() for i in result],
             "prediction_time": prediction_time,
             "buffer_read_time": buffer_read_time,
+            "request_read_time": request_read_time,
         })
 
     else:
