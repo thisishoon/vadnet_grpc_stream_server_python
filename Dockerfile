@@ -5,21 +5,18 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
     rm -rf /var/lib/apt/lists/* \
        /etc/apt/sources.list.d/cuda.list \
        /etc/apt/sources.list.d/nvidia-ml.list && \
-
-apt-get update && \
-
-DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    build-essential \
-    apt-utils \
-    ca-certificates \
-    wget \
-    git \
-    vim \
-    libssl-dev \
-    curl \
-    unzip \
-    unrar && \
-
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
+        build-essential \
+        apt-utils \
+        ca-certificates \
+        wget \
+        git \
+        vim \
+        libssl-dev \
+        curl \
+        unzip \
+        unrar && \
     DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
         software-properties-common \
         && \
@@ -36,6 +33,8 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     ln -s /usr/bin/python3.6 /usr/local/bin/python3 && \
     ln -s /usr/bin/python3.6 /usr/local/bin/python
 
+RUN apt-get install -y --no-install-recommends libsndfile1-dev
+
 RUN PIP_INSTALL="python -m pip --no-cache-dir install --upgrade" && \
     $PIP_INSTALL \
         setuptools \
@@ -48,5 +47,17 @@ RUN PIP_INSTALL="python -m pip --no-cache-dir install --upgrade" && \
         scikit-image>=0.14.2 \
         scikit-learn \
         matplotlib \
-        Cython && \
-        tensorflow==1.15
+        Cython \
+        tensorflow==1.15 \
+        librosa \
+        pycaption \
+        colorama \
+        flask \
+        flask_restful
+
+WORKDIR /app
+COPY . /app
+ADD /vadnet-pkg /vadnet
+RUN python -m pip --no-cache-dir install --upgrade -e ../vadnet
+ENTRYPOINT [ "python" ]
+CMD [ "app.py" ]
