@@ -28,6 +28,7 @@ class Predictor:
             self.vocab = json.load(fp)
 
         self.x = self.graph.get_tensor_by_name(self.vocab["x"])
+        self.sr = int(self.x.shape[1])  # 48000
         self.y = self.graph.get_tensor_by_name(self.vocab["y"])
         self.init = self.graph.get_operation_by_name(self.vocab["init"])
         self.logits = self.graph.get_tensor_by_name(self.vocab["logits"])
@@ -45,12 +46,23 @@ class Predictor:
         self.sess = tf.Session()
         self.saver.restore(self.sess, checkpoint_path)
 
-    def run(self, audio_array, n_batch=1):
+    def run(self, audio_array, n_batch=1, granularity=None):
         result = [
             np.empty([0] + x.shape[1:].as_list(), dtype=np.float32)
             for x in self.layers
         ]
-        frames = utils.audio_to_frames(audio_array, self.x.shape[1], None)
+        frames = utils.audio_to_frames(audio_array, self.sr, None)
+        if granularity is not None:
+            frames = [frames]
+            for gran in range(1, granularity):
+                audarr = audio_array[gran * int(round(self.sr / granularity)):]
+                n_add = self.sr * len(frames[0]) - len(audarr)
+                if n_add > 0:
+                    audarr = np.concatenate([audarr, np.zeros_like(audarr[:n_add])])
+                add = utils.audio_to_frames(audarr, self.x.shape[1], None)
+                frames += [add]
+            print([i.shape for i in frames])
+            frames = np.stack(frames, 1).reshape(-1, 48000)
         labels = np.zeros((frames.shape[0],), dtype=np.int32)
         self.sess.run(
             self.init,

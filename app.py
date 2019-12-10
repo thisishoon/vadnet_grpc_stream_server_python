@@ -1,3 +1,4 @@
+import pickle
 import numpy as np
 from flask import Flask, request
 from vadnet.predict_audio import Predictor
@@ -17,16 +18,21 @@ def api_message():
         data = request.data
         request_read_time = time.time() - now
         now = time.time()
-        audio_array = np.frombuffer(data, dtype="float32")
+        audio_array = pickle.loads(data)
+        if isinstance(audio_array, (list, tuple)):
+            audio_array, granularity = audio_array
+        else:
+            audio_array, granularity = audio_array, None
         buffer_read_time = time.time() - now
         now = time.time()
-        result = predictor.run(audio_array.reshape(-1, 1))
+        result = predictor.run(audio_array, granularity=granularity)
         prediction_time = time.time() - now
         return json.dumps({
             "result":[i.tolist() for i in result],
             "prediction_time": prediction_time,
             "buffer_read_time": buffer_read_time,
             "request_read_time": request_read_time,
+            "granularity": 1 if granularity is None else granularity
         })
 
     else:
