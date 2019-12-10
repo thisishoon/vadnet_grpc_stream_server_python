@@ -84,9 +84,9 @@ class Predictor:
                 break
         return result
 
-    def run_from_file(self, audio_path, n_batch=1):
+    def run_from_file(self, audio_path, n_batch=1, granularity=None):
         audio = utils.audio_from_file(audio_path, 48000)
-        return self.run(audio, n_batch)
+        return self.run(audio, n_batch, granularity)
 
 
 if __name__ == "__main__":
