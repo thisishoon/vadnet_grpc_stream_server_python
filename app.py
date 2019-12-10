@@ -34,7 +34,6 @@ def api_message():
             "request_read_time": request_read_time,
             "granularity": 1 if granularity is None else granularity
         })
-
     else:
         return "415 Unsupported Media Type"
 
