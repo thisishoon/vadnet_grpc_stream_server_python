@@ -2,11 +2,12 @@ import argparse
 import sys, os, csv, glob, random, threading, time, enum, json
 from typing import Optional, List
 import tensorflow as tf
-from tensorflow.python import pywrap_tensorflow
 import numpy as np
 import librosa as lr
-import vadnet.utils as utils
-
+import soundfile
+import utils as utils
+import io
+import media_pb2
 
 DEFAULT_CKPT_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "models/vad/model.ckpt-200106"
@@ -15,9 +16,9 @@ DEFAULT_CKPT_PATH = os.path.join(
 
 class Predictor:
     def __init__(
-        self,
-        checkpoint_path: str = DEFAULT_CKPT_PATH,
-        additional_layer_names=None,
+            self,
+            checkpoint_path: str = DEFAULT_CKPT_PATH,
+            additional_layer_names=None,
     ):
         self.checkpoint_path = checkpoint_path
         self.checkpoint_dir = os.path.split(checkpoint_path)[0]
@@ -86,11 +87,17 @@ class Predictor:
 
     def run_from_file(self, audio_path, n_batch=1, granularity=None):
         audio = utils.audio_from_file(audio_path, 48000)
+        # print(audio)
         return self.run(audio, n_batch, granularity)
+
+    def run_from_raw(self, raw_data):
+        data = io.BytesIO(raw_data)
+        audio = utils.audio_from_file(data, 48000)
+
+        return self.run(audio, 1, None)
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(
         description="Use NetVad to process a .wav file."
     )
