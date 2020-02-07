@@ -29,7 +29,6 @@ def serve(predictor):
         MediaServiceServicer(predictor), server)
     server.add_insecure_port('[::]:9999')
     server.start()
-
     server.wait_for_termination()
 
 

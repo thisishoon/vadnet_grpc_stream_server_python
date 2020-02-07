@@ -8,6 +8,7 @@ import soundfile
 import utils as utils
 import io
 import media_pb2
+import wave
 
 DEFAULT_CKPT_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "models/vad/model.ckpt-200106"
@@ -87,14 +88,18 @@ class Predictor:
 
     def run_from_file(self, audio_path, n_batch=1, granularity=None):
         audio = utils.audio_from_file(audio_path, 48000)
-        # print(audio)
+        #print(audio)
+        #print(type(audio))
         return self.run(audio, n_batch, granularity)
 
     def run_from_raw(self, raw_data):
-        data = io.BytesIO(raw_data)
-        audio = utils.audio_from_file(data, 48000)
+        data = np.frombuffer(raw_data, dtype=np.float32);
+        # print(data);
 
-        return self.run(audio, 1, None)
+        # data = io.BytesIO(raw_data)
+        # data = utils.audio_from_file(data, 48000)
+
+        return self.run(data, 1, None)[0][0]
 
 
 if __name__ == "__main__":
